@@ -26,6 +26,7 @@ dns64 {
 dns64 {
     upstream 8.8.8.8:53
 }
+proxy . 8.8.8.8:53
 ~~~
 
 Perform dns64 AAAA synthesizing using 8.8.8.8 for resolving any A records.
