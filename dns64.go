@@ -58,11 +58,11 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 		return r.ResponseWriter.WriteMsg(res)
 	}
 
-	// ONLY ANSWERS FIRST QUERY
+    // Make request to upstream
 	state := request.Request{W: r, Req: res}
 	res2, err := r.Proxy.Lookup(state, state.Name(), dns.TypeA)
 	if err != nil {
-		log.Print(err)
+        log.Printf("[WARNING] Unable to query upstream DNS: %v", err)
 		return r.ResponseWriter.WriteMsg(res)
 	}
 
@@ -74,7 +74,7 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 		if hdr.Rrtype == dns.TypeA {
 			aaaa, err := To6(r.Prefix, ans.(*dns.A).A)
 			if err != nil {
-				log.Print(err)
+				log.Printf("[ERROR] %v", err)
 			}
 			res.Answer[i] = &dns.AAAA{
 				Hdr: dns.RR_Header{
