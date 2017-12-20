@@ -76,7 +76,6 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 			if err != nil {
 				log.Print(err)
 			}
-			log.Print(aaaa)
 			res.Answer[i] = &dns.AAAA{
 				Hdr: dns.RR_Header{
 					Name:   hdr.Name,
