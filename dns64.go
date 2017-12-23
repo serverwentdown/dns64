@@ -69,22 +69,34 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 
 	// modify response.
 	res.MsgHdr.Rcode = dns.RcodeSuccess
+	nsTtl := uint32(600)
+	for i := 0; i < len(res.Ns); i++ {
+		if res.Ns[i].Header().Rrtype == dns.TypeSOA {
+			nsTtl = res.Ns[i].Header().Ttl
+		}
+	}
 	res.Answer = res2.Answer
 	for i := 0; i < len(res.Answer); i++ {
 		ans := res.Answer[i]
 		hdr := ans.Header()
 		if hdr.Rrtype == dns.TypeA {
 			aaaa, _ := To6(r.Prefix, ans.(*dns.A).A)
+			ttl := nsTtl
+			if ans.Header().Ttl < ttl {
+				ttl = ans.Header().Ttl
+			}
 			res.Answer[i] = &dns.AAAA{
 				Hdr: dns.RR_Header{
 					Name:   hdr.Name,
 					Rrtype: dns.TypeAAAA,
 					Class:  hdr.Class,
+					Ttl:    ttl,
 				},
 				AAAA: aaaa,
 			}
 		}
 	}
+	res.Ns = []dns.RR{}
 
 	return r.ResponseWriter.WriteMsg(res)
 }
