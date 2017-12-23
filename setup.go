@@ -59,7 +59,7 @@ func dns64Parse(c *caddy.Controller) (proxy.Proxy, *net.IPNet, error) {
 				}
 				_, pref, err := net.ParseCIDR(c.Val())
 
-				// Test for valid prefix
+				// test for valid prefix
 				n, total := pref.Mask.Size()
 				if total != 128 {
 					return prxy, pref, c.Errf("'%s' not a valid IPv6 address", pref)

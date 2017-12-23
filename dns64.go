@@ -41,41 +41,40 @@ type ResponseWriter struct {
 
 // WriteMsg implements the dns.ResponseWriter interface.
 func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
-	// Only respond with this when the request came in over IPv6.
-	v4 := false
-	if ip, ok := r.RemoteAddr().(*net.UDPAddr); ok {
-		v4 = ip.IP.To4() != nil
-	}
-	if ip, ok := r.RemoteAddr().(*net.TCPAddr); ok {
-		v4 = ip.IP.To4() != nil
-	}
-	if v4 { // if it came in over v4, don't do anything.
-		return r.ResponseWriter.WriteMsg(res)
-	}
-
-	ty, _ := response.Typify(res, time.Now().UTC())
-	if ty != response.NoData {
-		return r.ResponseWriter.WriteMsg(res)
-	}
-
-    // Make request to upstream
 	state := request.Request{W: r, Req: res}
+
+	// only respond with this when the request came in over IPv6.
+	if state.Family() == 1 { // if it came in over v4, don't do anything.
+		return r.ResponseWriter.WriteMsg(res)
+	}
+
+	// do not modify if query is not AAAA or not of class IN.
+	if state.QType() != dns.TypeAAAA || state.QClass() != dns.ClassINET {
+		return r.ResponseWriter.WriteMsg(res)
+	}
+
+	// do not modify if there are AAAA records or NameError. continue if NoData or any other error.
+	ty, _ := response.Typify(res, time.Now().UTC())
+	if ty == response.NoError || ty == response.NameError {
+		return r.ResponseWriter.WriteMsg(res)
+	}
+
+	// perform request to upstream.
 	res2, err := r.Proxy.Lookup(state, state.Name(), dns.TypeA)
 	if err != nil {
-        log.Printf("[WARNING] Unable to query upstream DNS: %v", err)
+		log.Printf("[WARNING] Unable to query upstream DNS: %v", err)
+		res.MsgHdr.Rcode = dns.RcodeServerFailure
 		return r.ResponseWriter.WriteMsg(res)
 	}
 
-	// Modify response
+	// modify response.
+	res.MsgHdr.Rcode = dns.RcodeSuccess
 	res.Answer = res2.Answer
 	for i := 0; i < len(res.Answer); i++ {
 		ans := res.Answer[i]
 		hdr := ans.Header()
 		if hdr.Rrtype == dns.TypeA {
-			aaaa, err := To6(r.Prefix, ans.(*dns.A).A)
-			if err != nil {
-				log.Printf("[ERROR] %v", err)
-			}
+			aaaa, _ := To6(r.Prefix, ans.(*dns.A).A)
 			res.Answer[i] = &dns.AAAA{
 				Hdr: dns.RR_Header{
 					Name:   hdr.Name,
@@ -92,7 +91,7 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 
 // Write implements the dns.ResponseWriter interface.
 func (r *ResponseWriter) Write(buf []byte) (int, error) {
-	log.Printf("[WARNING] Dns64 called with Write: not performing DNS64")
+	log.Printf("[WARNING] DNS64 called with Write: not performing DNS64")
 	n, err := r.ResponseWriter.Write(buf)
 	return n, err
 }
@@ -111,7 +110,7 @@ func To6(prefix *net.IPNet, addr net.IP) (net.IP, error) {
 	}
 
 	n, _ := prefix.Mask.Size()
-	// Assumes prefix has been validated during setup
+	// assumes prefix has been validated during setup
 	v6 := make([]byte, 16)
 	i, j := 0, 0
 
