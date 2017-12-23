@@ -35,3 +35,15 @@ Perform dns64 AAAA synthesizing using 8.8.8.8 for resolving any A records.
 
 <https://en.wikipedia.org/wiki/IPv6_transition_mechanism#DNS64> and RFC 6147.
 
+## Installation
+
+```
+$ go get github.com/coredns/coredns
+$ go get github.com/serverwentdown/dns64
+$ cd $GOPATH/src/github.com/coredns/coredns
+$ vim plugin.cfg
+# Add the line dns64:github.com/serverwentdown/dns64 before the hosts middleware
+$ go generate
+$ go build
+$ ./coredns -plugins | grep dns64
+```
