@@ -1,6 +1,6 @@
 # dns64
 
-The *dns64* middleware implements the DNS64 IPv6 transition mechanism. From Wikipedia:
+The *dns64* plugin implements the DNS64 IPv6 transition mechanism. From Wikipedia:
 
 > DNS64 describes a DNS server that when asked for a domain's AAAA records, but only finds
 > A records, synthesizes the AAAA records from the A records.
