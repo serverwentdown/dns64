@@ -7,6 +7,12 @@ The *dns64* plugin implements the DNS64 IPv6 transition mechanism. From Wikipedi
 
 The synthesis in only performed if the query came in via IPv6.
 
+## TODO
+
+* [ ] Resolve PTR records
+* [ ] Follow CNAME records
+* [ ] Make resolver DNSSEC aware
+
 ## Syntax
 
 ~~~
