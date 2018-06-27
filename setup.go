@@ -12,7 +12,7 @@ import (
 	"github.com/mholt/caddy"
 )
 
-var log = clog.NewWithPlugin("hosts")
+var log = clog.NewWithPlugin("dns64")
 
 func init() {
 	caddy.RegisterPlugin("dns64", caddy.Plugin{
