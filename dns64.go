@@ -3,7 +3,6 @@ package dns64
 
 import (
 	"errors"
-	"log"
 	"net"
 	"time"
 
@@ -56,13 +55,15 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 	// do not modify if there are AAAA records or NameError. continue if NoData or any other error.
 	ty, _ := response.Typify(res, time.Now().UTC())
 	if ty == response.NoError || ty == response.NameError {
-		return r.ResponseWriter.WriteMsg(res)
+		if hasAAAA(res) {
+			return r.ResponseWriter.WriteMsg(res)
+		}
 	}
 
 	// perform request to upstream.
 	res2, err := r.Proxy.Lookup(state, state.Name(), dns.TypeA)
 	if err != nil {
-		log.Printf("[WARNING] Unable to query upstream DNS: %v", err)
+		log.Warningf("[WARNING] Unable to query upstream DNS: %v", err)
 		res.MsgHdr.Rcode = dns.RcodeServerFailure
 		return r.ResponseWriter.WriteMsg(res)
 	}
@@ -103,7 +104,7 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 
 // Write implements the dns.ResponseWriter interface.
 func (r *ResponseWriter) Write(buf []byte) (int, error) {
-	log.Printf("[WARNING] DNS64 called with Write: not performing DNS64")
+	log.Warning("[WARNING] DNS64 called with Write: not performing DNS64")
 	n, err := r.ResponseWriter.Write(buf)
 	return n, err
 }
@@ -140,4 +141,14 @@ func To6(prefix *net.IPNet, addr net.IP) (net.IP, error) {
 	}
 
 	return v6, nil
+}
+
+// hasAAAA checks if AAAA records exists in dns.Msg
+func hasAAAA(res *dns.Msg) bool {
+	for _, a := range res.Answer {
+		if a.Header().Rrtype == dns.TypeAAAA {
+			return true
+		}
+	}
+	return false
 }
