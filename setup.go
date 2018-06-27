@@ -60,7 +60,8 @@ func dns64Parse(c *caddy.Controller) (proxy.Proxy, *net.IPNet, error) {
 				if !c.NextArg() {
 					return prxy, pref, c.ArgErr()
 				}
-				_, pref, err := net.ParseCIDR(c.Val())
+				var err error
+				_, pref, err = net.ParseCIDR(c.Val())
 
 				// test for valid prefix
 				n, total := pref.Mask.Size()
