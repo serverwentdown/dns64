@@ -6,10 +6,13 @@ import (
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/pkg/dnsutil"
+	clog "github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/coredns/coredns/plugin/proxy"
 
 	"github.com/mholt/caddy"
 )
+
+var log = clog.NewWithPlugin("dns64")
 
 func init() {
 	caddy.RegisterPlugin("dns64", caddy.Plugin{
@@ -57,7 +60,8 @@ func dns64Parse(c *caddy.Controller) (proxy.Proxy, *net.IPNet, error) {
 				if !c.NextArg() {
 					return prxy, pref, c.ArgErr()
 				}
-				_, pref, err := net.ParseCIDR(c.Val())
+				var err error
+				_, pref, err = net.ParseCIDR(c.Val())
 
 				// test for valid prefix
 				n, total := pref.Mask.Size()
