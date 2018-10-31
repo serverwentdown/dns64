@@ -20,6 +20,7 @@ type DNS64 struct {
 	Next   plugin.Handler
 	Proxy  proxy.Proxy
 	Prefix *net.IPNet
+	translateAll bool
 }
 
 // ServeDNS implements the plugin.Handler interface.
@@ -55,7 +56,7 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 	// do not modify if there are AAAA records or NameError. continue if NoData or any other error.
 	ty, _ := response.Typify(res, time.Now().UTC())
 	if ty == response.NoError || ty == response.NameError {
-		if hasAAAA(res) {
+		if hasAAAA(res) && ! r.translateAll {
 			return r.ResponseWriter.WriteMsg(res)
 		}
 	}
