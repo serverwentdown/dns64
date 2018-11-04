@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
-	"github.com/coredns/coredns/plugin/pkg/dnsutil"
+	"github.com/coredns/coredns/plugin/pkg/parse"
 	clog "github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/coredns/coredns/plugin/proxy"
 
@@ -52,7 +52,7 @@ func dns64Parse(c *caddy.Controller) (proxy.Proxy, *net.IPNet, bool, error) {
 				if len(args) == 0 {
 					return prxy, pref, translateAll, c.ArgErr()
 				}
-				ups, err := dnsutil.ParseHostPortOrFile(args...)
+				ups, err := parse.HostPortOrFile(args...)
 				if err != nil {
 					return prxy, pref, translateAll, err
 				}
