@@ -12,7 +12,7 @@ import (
 	"github.com/coredns/coredns/request"
 
 	"github.com/miekg/dns"
-	"golang.org/x/net/context"
+	"context"
 )
 
 // DNS64 performs DNS64.
