@@ -3,11 +3,12 @@ package dns64
 import (
 	"net"
 	"strconv"
+
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
-	"github.com/coredns/coredns/plugin/pkg/parse"
 	clog "github.com/coredns/coredns/plugin/pkg/log"
-	"github.com/coredns/coredns/plugin/proxy"
+	"github.com/coredns/coredns/plugin/pkg/parse"
+	"github.com/coredns/proxy"
 
 	"github.com/mholt/caddy"
 )
