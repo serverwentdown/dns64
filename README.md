@@ -56,12 +56,16 @@ file example.com.db
 
 ## Installation
 
-```
+```console
 $ go get github.com/coredns/coredns
 $ go get github.com/serverwentdown/dns64
 $ cd $GOPATH/src/github.com/coredns/coredns
 $ vim plugin.cfg
-# Add the line dns64:github.com/serverwentdown/dns64 before the hosts middleware
+
+Add to end of file:
+proxy:github.com/coredns/proxy
+dns64:github.com/serverwentdown/dns64
+
 $ go generate
 $ go build
 $ ./coredns -plugins | grep dns64

@@ -2,24 +2,24 @@
 package dns64
 
 import (
+	"context"
 	"errors"
 	"net"
 	"time"
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/pkg/response"
-	"github.com/coredns/coredns/plugin/proxy"
 	"github.com/coredns/coredns/request"
+	"github.com/coredns/proxy"
 
 	"github.com/miekg/dns"
-	"context"
 )
 
 // DNS64 performs DNS64.
 type DNS64 struct {
-	Next   plugin.Handler
-	Proxy  proxy.Proxy
-	Prefix *net.IPNet
+	Next         plugin.Handler
+	Proxy        proxy.Proxy
+	Prefix       *net.IPNet
 	translateAll bool
 }
 
@@ -56,7 +56,7 @@ func (r *ResponseWriter) WriteMsg(res *dns.Msg) error {
 	// do not modify if there are AAAA records or NameError. continue if NoData or any other error.
 	ty, _ := response.Typify(res, time.Now().UTC())
 	if ty == response.NoError || ty == response.NameError {
-		if hasAAAA(res) && ! r.translateAll {
+		if hasAAAA(res) && !r.translateAll {
 			return r.ResponseWriter.WriteMsg(res)
 		}
 	}
