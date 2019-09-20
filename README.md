@@ -18,6 +18,7 @@ Not all features required by DNS64 are implemented, only basic AAAA synthesis.
 * [ ] Resolve PTR records
 * [ ] Follow CNAME records
 * [ ] Make resolver DNSSEC aware
+* [ ] Improve test coverage
 
 ## Usage
 
