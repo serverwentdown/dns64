@@ -69,7 +69,7 @@ RFC 6147
 
 ## Installation
 
-See [CoreDNS Documentation](https://coredns.io/2017/07/25/compile-time-enabling-or-disabling-plugins/) for more information on how to include this plugin. A (DNS64 example)[https://github.com/serverwentdown/dns64-build] is available too. 
+See [CoreDNS Documentation](https://coredns.io/2017/07/25/compile-time-enabling-or-disabling-plugins/) for more information on how to include this plugin. A [DNS64 example](https://github.com/serverwentdown/dns64-build) is available too. 
 
 Here's the summary:
 
