@@ -19,6 +19,9 @@ Not all features required by DNS64 are implemented, only basic AAAA synthesis.
 * [ ] Follow CNAME records
 * [ ] Make resolver DNSSEC aware
 * [ ] Improve test coverage
+* [ ] Improve the hooking method
+  - At the moment, the plugin hijacks WriteMsg and does the modifications on the message being written. This very likely can break other plugins especially plugins like DNSSEC. 
+  - [ ] What position should the plugin be? 
 
 ## Usage
 
@@ -66,7 +69,9 @@ RFC 6147
 
 ## Installation
 
-See [CoreDNS Documentation](https://coredns.io/2017/07/25/compile-time-enabling-or-disabling-plugins/) for more information on how to include this plugin. Here's the summary:
+See [CoreDNS Documentation](https://coredns.io/2017/07/25/compile-time-enabling-or-disabling-plugins/) for more information on how to include this plugin. A (DNS64 example)[https://github.com/serverwentdown/dns64-build] is available too. 
+
+Here's the summary:
 
 ```
 package main
@@ -94,4 +99,3 @@ func main() {
 }
 ```
 
-You might have to copy CoreDNS's `go.mod`
