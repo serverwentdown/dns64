@@ -10,7 +10,7 @@ func WrapperTo6(prefix, address string) (net.IP, error) {
 	_, pref, _ := net.ParseCIDR(prefix)
 	addr := net.ParseIP(address)
 
-	v6, err := To6(pref, addr)
+	v6, err := to6(pref, addr)
 
 	return v6, err
 }
